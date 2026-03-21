@@ -1,0 +1,16 @@
+{
+  "name": "regex-toolkit-api",
+  "version": "1.0.0",
+  "description": "Regex testing, explanation, and generation REST API + MCP server",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "mcp": "node src/mcp-server.js"
+  },
+  "keywords": ["regex", "regular-expression", "api", "mcp", "testing", "explain"],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2",
+    "cors": "^2.8.5"
+  }
+}

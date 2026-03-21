@@ -1,0 +1,278 @@
+openapi: 3.0.3
+info:
+  title: Regex Toolkit API
+  description: Regex testing, explanation, and generation REST API
+  version: 1.0.0
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:4200
+
+paths:
+  /:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: API info
+
+  /api/v1/test:
+    post:
+      summary: Test regex against text
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pattern, text]
+              properties:
+                pattern:
+                  type: string
+                  example: '(\d+)'
+                text:
+                  type: string
+                  example: 'abc 123 def 456'
+                flags:
+                  type: string
+                  example: 'g'
+      responses:
+        '200':
+          description: Match results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pattern:
+                    type: string
+                  flags:
+                    type: string
+                  text:
+                    type: string
+                  matchCount:
+                    type: integer
+                  matches:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        match:
+                          type: string
+                        index:
+                          type: integer
+                        length:
+                          type: integer
+                        groups:
+                          type: object
+        '400':
+          description: Invalid regex
+
+  /api/v1/replace:
+    post:
+      summary: Replace matches using regex
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pattern, text, replacement]
+              properties:
+                pattern:
+                  type: string
+                  example: '\d+'
+                text:
+                  type: string
+                  example: 'abc 123 def 456'
+                replacement:
+                  type: string
+                  example: '#'
+                flags:
+                  type: string
+                  example: 'g'
+      responses:
+        '200':
+          description: Replacement result
+        '400':
+          description: Invalid regex
+
+  /api/v1/split:
+    post:
+      summary: Split text using regex
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pattern, text]
+              properties:
+                pattern:
+                  type: string
+                  example: '[,;]'
+                text:
+                  type: string
+                  example: 'a,b;c,d'
+                flags:
+                  type: string
+                limit:
+                  type: integer
+      responses:
+        '200':
+          description: Split parts
+        '400':
+          description: Invalid regex
+
+  /api/v1/validate:
+    post:
+      summary: Validate regex syntax
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pattern]
+              properties:
+                pattern:
+                  type: string
+                  example: '(\d+'
+                flags:
+                  type: string
+      responses:
+        '200':
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+                  pattern:
+                    type: string
+                  flags:
+                    type: string
+                  error:
+                    type: string
+
+  /api/v1/patterns:
+    get:
+      summary: List all common regex patterns
+      responses:
+        '200':
+          description: Pattern list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  patterns:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        examples:
+                          type: array
+                          items:
+                            type: string
+
+  /api/v1/patterns/{name}:
+    get:
+      summary: Get a specific common pattern
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+          example: email
+      responses:
+        '200':
+          description: Pattern details
+        '404':
+          description: Pattern not found
+
+  /api/v1/explain:
+    post:
+      summary: Explain regex in plain English
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pattern]
+              properties:
+                pattern:
+                  type: string
+                  example: '^[a-z]+\d{2,4}$'
+                flags:
+                  type: string
+                  example: 'i'
+      responses:
+        '200':
+          description: Explanation with token breakdown
+        '400':
+          description: Invalid input
+
+  /api/v1/escape:
+    post:
+      summary: Escape special regex characters
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                text:
+                  type: string
+                  example: 'price is $9.99 (USD)'
+      responses:
+        '200':
+          description: Escaped string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  original:
+                    type: string
+                  escaped:
+                    type: string
+
+  /api/v1/benchmark:
+    post:
+      summary: Benchmark regex performance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pattern, text]
+              properties:
+                pattern:
+                  type: string
+                text:
+                  type: string
+                flags:
+                  type: string
+                iterations:
+                  type: integer
+                  default: 1000
+      responses:
+        '200':
+          description: Benchmark results
+        '400':
+          description: Invalid regex
